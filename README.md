@@ -1,28 +1,30 @@
 # Azure OpenAI Proxy
-## 介绍
-English | 中文
+## Introduction
 
-一个Azure OpenAI API的代理工具，可以将一个OpenAI请求转化为Azure OpenAI请求，方便作为各类开源ChatGPT的后端使用。同时也支持作为单纯的OpenAI接口代理使用，用来解决OpenAI接口在部分地区的被限制使用的问题。
+<a href="./README.md">English</a> |
+<a href="./README.zh-cn.md">中文</a>
 
-亮点：
-+ 🌐 支持代理所有 Azure OpenAI 接口
-+ 🧠 支持代理所有 Azure OpenAI 模型以及自定义微调模型
-+ 🗺️ 支持自定义 Azure 部署名与 OpenAI 模型的映射关系
-+ 🔄 支持反向代理和正向代理两种方式使用
+Azure OpenAI Proxy is a proxy for Azure OpenAI API that can convert an OpenAI request to an Azure OpenAI request. It is designed to use as a backend for various open source ChatGPT web project. It also supports being used as a simple OpenAI API proxy to solve the problem of OpenAI API being restricted in some regions.
 
-## 使用方式
-### 1. 作为反向代理使用（即一个OpenAI API网关）
-环境变量
+Highlights:
++ 🌐 Supports proxying all Azure OpenAI APIs
++ 🧠 Supports proxying all Azure OpenAI models and custom fine-tuned models
++ 🗺️ Supports custom mapping between Azure deployment names and OpenAI models
++ 🔄 Supports both reverse proxy and forward proxy usage
 
-| 参数名                        | 描述                                                                                                                                                                               | 默认值                                                                     |
-|:---------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------------------------|
-| AZURE_OPENAI_PROXY_ADDRESS | 服务监听地址                                                                                                                                                                           | 0.0.0.0:8080                                                            |
-| AZURE_OPENAI_PROXY_MODE    | 代理模式，可以为azure/openai 2种模式                                                                                                                                                        | azure                                                                   |
-| AZURE_OPENAI_ENDPOINT      | Azure OpenAI Endpoint，一般类似https://{custom}.openai.azure.com的格式。必需。                                                                                                               |                                                                         |
-| AZURE_OPENAI_APIVERSION    | Azure OpenAI API 的 API 版本。默认为 2023-03-15-preview。                                                                                                                                | 2023-03-15-preview                                                      |
-| AZURE_OPENAI_MODEL_MAPPER  | 一个逗号分隔的 model=deployment 对列表。模型名称映射到部署名称。例如，`gpt-3.5-turbo=gpt-35-turbo`,`gpt-3.5-turbo-0301=gpt-35-turbo-0301`。未匹配到的情况下，代理会直接透传model作为deployment使用(其实Azure大部分模型名字和OpenAI的保持一致)。 | `gpt-3.5-turbo=gpt-35-turbo`<br/>`gpt-3.5-turbo-0301=gpt-35-turbo-0301` |
+## Usage
+### 1. Used as reverse proxy (i.e. an OpenAI API gateway)
+Environment Variables
 
-在命令行调用
+| Parameters                    | Description                                                                                                                                                                                                                                                                                                    | Default Value                                                             |
+|:---------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------------------------|
+| AZURE_OPENAI_PROXY_ADDRESS | Service listening address                                                                                                                                                                                                                                                                                      | 0.0.0.0:8080                                                              |
+| AZURE_OPENAI_PROXY_MODE    | Proxy mode, can be either "azure" or "openai".                                                                                                                                                                                                                                                                 | azure                                                                   |
+| AZURE_OPENAI_ENDPOINT      | Azure OpenAI Endpoint, usually looks like https://{custom}.openai.azure.com. Required.                                                                                                                                                                                                                         |                                                                         |
+| AZURE_OPENAI_APIVERSION    | Azure OpenAI API version. Default is 2023-03-15-preview.                                                                                                                                                                                                                                                       | 2023-03-15-preview                                                      |
+| AZURE_OPENAI_MODEL_MAPPER  | A comma-separated list of model=deployment pairs. Maps model names to deployment names. For example, `gpt-3.5-turbo=gpt-35-turbo`, `gpt-3.5-turbo-0301=gpt-35-turbo-0301`. If there is no match, the proxy will pass model as deployment name directly (in fact, most Azure model names are same with OpenAI). | `gpt-3.5-turbo=gpt-35-turbo`<br/>`gpt-3.5-turbo-0301=gpt-35-turbo-0301` |
+
+Use in command line
 ```shell
 curl https://{your-custom-domain}/v1/chat/completions \
   -H "Content-Type: application/json" \
@@ -31,15 +33,15 @@ curl https://{your-custom-domain}/v1/chat/completions \
     "model": "gpt-3.5-turbo",
     "messages": [{"role": "user", "content": "Hello!"}]
   }'
-
 ```
 
-### 2. 作为正向代理使用（即一个HTTP Proxy）
-通过HTTP访问Azure OpenAI接口时，可以直接作为代理使用，但是这个工具没有内置原生的HTTPS支持，需要在工具前架设一个类似Nginx的HTTPS代理，来支持访问HTTPS版本的OpenAI接口。
 
-假设你配置好后的代理域名为`https://{your-domain}.com`，你可以在终端中执行以下命令来配置http代理：
+### 2. Used as forward proxy (i.e. an HTTP proxy)
+When accessing Azure OpenAI API through HTTP, it can be used directly as a proxy, but this tool does not have built-in HTTPS support, so you need an HTTPS proxy such as Nginx to support accessing HTTPS version of OpenAI API.
+
+Assuming that the proxy domain you configured is `https://{your-domain}.com`, you can execute the following commands in the terminal to use the https proxy:
 ```shell
-export https_proxy=https://{your-domain}.com 
+export https_proxy=https://{your-domain}.com
 
 curl https://api.openai.com/v1/chat/completions \
   -H "Content-Type: application/json" \
@@ -48,26 +50,25 @@ curl https://api.openai.com/v1/chat/completions \
     "model": "gpt-3.5-turbo",
     "messages": [{"role": "user", "content": "Hello!"}]
   }'
-
 ```
 
-或者在其他开源Web ChatGPT项目中配置为HTTP代理
+Or configure it as an HTTP proxy in other open source Web ChatGPT projects:
 ```
 export HTTPS_PROXY=https://{your-domain}.com
 ```
 
-## 模型映射机制
-`AZURE_OPENAI_MODEL_MAPPER`中预定义了一系列模型映射的规则，默认配置基本上满足了所有Azure模型的映射，规则包括：
+## Model Mapping Mechanism
+There are a series of rules for model mapping pre-defined in `AZURE_OPENAI_MODEL_MAPPER`, and the default configuration basically satisfies the mapping of all Azure models. The rules include:
 + `gpt-3.5-turbo` -> `gpt-35-turbo`
 + `gpt-3.5-turbo-0301` -> `gpt-35-turbo-0301`
-+ 以及一个透传模型名的机制作为fallback手段
++ A mapping mechanism that pass model name directly as fallback.
 
-对于自定义的微调模型，可以直接透传模型名。对于部署名字和模型名不一样的，可以自定义映射关系，比如：
+For custom fine-tuned models, the model name can be passed directly. For models with deployment names different from the model names, custom mapping relationships can be defined, such as:
 
-| 模型名称               | 部署名称                         |
+| Model Name               | Deployment Name                 |
 |:-------------------|:-----------------------------|
 | gpt-3.5-turbo      | gpt-35-turbo-upgrade         |
 | gpt-3.5-turbo-0301 | gpt-35-turbo-0301-fine-tuned |
 
-## 许可证
+## License
 MIT
