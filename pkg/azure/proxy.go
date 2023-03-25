@@ -63,7 +63,7 @@ func NewOpenAIReverseProxy() *httputil.ReverseProxy {
 		model := gjson.GetBytes(body, "model").String()
 		deployment := GetDeploymentByModel(model)
 
-		// Set the api-key header and remove the Authorization header
+		// Replace the Bearer field in the Authorization header with api-key
 		token := strings.ReplaceAll(req.Header.Get("Authorization"), "Bearer ", "")
 		req.Header.Set("api-key", token)
 		req.Header.Del("Authorization")
