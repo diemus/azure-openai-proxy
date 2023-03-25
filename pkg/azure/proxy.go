@@ -92,8 +92,14 @@ func NewOpenAIReverseProxy() *httputil.ReverseProxy {
 		if response.Header.Get("Content-Type") == "text/event-stream" {
 			//BUGFIX: try to fix the difference between azure and openai, Azure's response is missing a \n
 			//see https://github.com/Chanzhaoyu/chatgpt-web/issues/831
-			azureBugFixSuffix := strings.NewReader("\n")
-			response.Body = ioutil.NopCloser(io.MultiReader(response.Body, azureBugFixSuffix))
+			body := response.Body
+			r, w := io.Pipe()
+			response.Body = r
+			go func() {
+				defer w.Close()
+				io.Copy(w, body)
+				fmt.Fprint(w, "\n")
+			}()
 		}
 		return nil
 	}}
@@ -105,4 +111,7 @@ func GetDeploymentByModel(model string) string {
 	}
 	// This is a fallback strategy in case the model is not found in the AzureOpenAIModelMapper
 	return fallbackModelMapper.ReplaceAllString(model, "")
+}
+
+type Copier struct {
 }
