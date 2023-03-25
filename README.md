@@ -56,6 +56,28 @@ Or configure it as an HTTP proxy in other open source Web ChatGPT projects:
 ```
 export HTTPS_PROXY=https://{your-domain}.com
 ```
+## Deploy
+
+Deploying through Docker
+
+```shell
+docker pull ishadows/azure-openai-proxy:latest
+docker run -d -p 8080:8080 --name=azure-openai-proxy \
+  --env AZURE_OPENAI_ENDPOINT={your azure endpoint} \
+  --env AZURE_OPENAI_MODEL_MAPPER={your custom model mapper ,like: gpt-3.5-turbo=gpt-35-turbo,gpt-3.5-turbo-0301=gpt-35-turbo-0301} \
+  ishadows/azure-openai-proxy:latest
+```
+Calling
+
+```shell
+curl https://localhost:8080/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer {your azure api key}" \
+  -d '{
+    "model": "gpt-3.5-turbo",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'
+```
 
 ## Model Mapping Mechanism
 There are a series of rules for model mapping pre-defined in `AZURE_OPENAI_MODEL_MAPPER`, and the default configuration basically satisfies the mapping of all Azure models. The rules include:

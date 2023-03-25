@@ -14,6 +14,7 @@ var (
 )
 
 func init() {
+	gin.SetMode(gin.ReleaseMode)
 	if v := os.Getenv("AZURE_OPENAI_PROXY_ADDRESS"); v != "" {
 		Address = v
 	}
@@ -26,7 +27,6 @@ func init() {
 
 func main() {
 	r := gin.Default()
-	gin.SetMode(gin.ReleaseMode)
 	r.Any("*path", func(c *gin.Context) {
 		if ProxyMode == "azure" {
 			server := azure.NewOpenAIReverseProxy()
