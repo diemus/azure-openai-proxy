@@ -58,7 +58,7 @@ func NewOpenAIReverseProxy() *httputil.ReverseProxy {
 	}
 	director := func(req *http.Request) {
 		// Get model and map it to deployment
-		if req.Body != nil {
+		if req.Body == nil {
 			log.Println("unsupported request, body is empty")
 			return
 		}
