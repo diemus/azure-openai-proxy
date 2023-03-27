@@ -112,6 +112,3 @@ func GetDeploymentByModel(model string) string {
 	// This is a fallback strategy in case the model is not found in the AzureOpenAIModelMapper
 	return fallbackModelMapper.ReplaceAllString(model, "")
 }
-
-type Copier struct {
-}
