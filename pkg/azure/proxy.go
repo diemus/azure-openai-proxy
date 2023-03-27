@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/tidwall/gjson"
-	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -89,18 +88,18 @@ func NewOpenAIReverseProxy() *httputil.ReverseProxy {
 		log.Printf("proxying request [%s] %s -> %s", model, originURL, req.URL.String())
 	}
 	return &httputil.ReverseProxy{Director: director, ModifyResponse: func(response *http.Response) error {
-		if response.Header.Get("Content-Type") == "text/event-stream" {
-			//BUGFIX: try to fix the difference between azure and openai, Azure's response is missing a \n
-			//see https://github.com/Chanzhaoyu/chatgpt-web/issues/831
-			body := response.Body
-			r, w := io.Pipe()
-			response.Body = r
-			go func() {
-				defer w.Close()
-				io.Copy(w, body)
-				fmt.Fprint(w, "\n")
-			}()
-		}
+		//if response.Header.Get("Content-Type") == "text/event-stream" {
+		//	//BUGFIX: try to fix the difference between azure and openai, Azure's response is missing a \n
+		//	//see https://github.com/Chanzhaoyu/chatgpt-web/issues/831
+		//	body := response.Body
+		//	r, w := io.Pipe()
+		//	response.Body = r
+		//	go func() {
+		//		defer w.Close()
+		//		io.Copy(w, body)
+		//		fmt.Fprint(w, "\n")
+		//	}()
+		//}
 		return nil
 	}}
 }
@@ -111,7 +110,4 @@ func GetDeploymentByModel(model string) string {
 	}
 	// This is a fallback strategy in case the model is not found in the AzureOpenAIModelMapper
 	return fallbackModelMapper.ReplaceAllString(model, "")
-}
-
-type Copier struct {
 }
