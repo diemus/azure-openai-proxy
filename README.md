@@ -1,4 +1,11 @@
 # Azure OpenAI Proxy
+[![Go Report Card](https://goreportcard.com/badge/github.com/diemus/azure-openai-proxy)](https://goreportcard.com/report/github.com/diemus/azure-openai-proxy)
+[![License](https://badgen.net/badge/license/MIT/cyan)](https://github.com/diemus/azure-openai-proxy/blob/main/LICENSE)
+[![Release](https://badgen.net/github/release/diemus/azure-openai-proxy/latest)](https://github.com/diemus/azure-openai-proxy)
+[![Azure](https://badgen.net/badge/icon/Azure?icon=azure&label)](https://github.com/diemus/azure-openai-proxy)
+[![Azure](https://badgen.net/badge/icon/OpenAI?icon=azure&label)](https://github.com/diemus/azure-openai-proxy)
+[![Azure](https://badgen.net/badge/icon/docker?icon=docker&label)](https://github.com/diemus/azure-openai-proxy)
+
 ## Introduction
 
 <a href="./README.md">English</a> |
@@ -94,3 +101,7 @@ For custom fine-tuned models, the model name can be passed directly. For models 
 
 ## License
 MIT
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=diemus/azure-openai-proxy&type=Date)](https://star-history.com/#diemus/azure-openai-proxy&Date)
