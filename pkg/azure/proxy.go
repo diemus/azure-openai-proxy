@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/tidwall/gjson"
-	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -88,21 +87,7 @@ func NewOpenAIReverseProxy() *httputil.ReverseProxy {
 
 		log.Printf("proxying request [%s] %s -> %s", model, originURL, req.URL.String())
 	}
-	return &httputil.ReverseProxy{Director: director, ModifyResponse: func(response *http.Response) error {
-		if response.Header.Get("Content-Type") == "text/event-stream" {
-			//BUGFIX: try to fix the difference between azure and openai, Azure's response is missing a \n
-			//see https://github.com/Chanzhaoyu/chatgpt-web/issues/831
-			body := response.Body
-			r, w := io.Pipe()
-			response.Body = r
-			go func() {
-				defer w.Close()
-				io.Copy(w, body)
-				fmt.Fprint(w, "\n")
-			}()
-		}
-		return nil
-	}}
+	return &httputil.ReverseProxy{Director: director}
 }
 
 func GetDeploymentByModel(model string) string {

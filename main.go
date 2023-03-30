@@ -31,6 +31,14 @@ func main() {
 		if ProxyMode == "azure" {
 			server := azure.NewOpenAIReverseProxy()
 			server.ServeHTTP(c.Writer, c.Request)
+			//BUGFIX: try to fix the difference between azure and openai
+			//Azure's response is missing a \n at the end of the stream
+			//see https://github.com/Chanzhaoyu/chatgpt-web/issues/831
+			if c.Writer.Header().Get("Content-Type") == "text/event-stream" {
+				if _, err := c.Writer.Write([]byte("\n")); err != nil {
+					log.Printf("rewrite azure response error: %v", err)
+				}
+			}
 		} else {
 			server := openai.NewOpenAIReverseProxy()
 			server.ServeHTTP(c.Writer, c.Request)
