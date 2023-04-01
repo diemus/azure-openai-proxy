@@ -3,7 +3,6 @@ package azure
 import (
 	"bytes"
 	"fmt"
-	"github.com/tidwall/gjson"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -13,9 +12,12 @@ import (
 	"path"
 	"regexp"
 	"strings"
+
+	"github.com/tidwall/gjson"
 )
 
 var (
+	AzureOpenAIToken       = ""
 	AzureOpenAIAPIVersion  = "2023-03-15-preview"
 	AzureOpenAIEndpoint    = ""
 	AzureOpenAIModelMapper = map[string]string{
@@ -41,6 +43,9 @@ func init() {
 			}
 			AzureOpenAIModelMapper[info[0]] = info[1]
 		}
+	}
+	if v := os.Getenv("AZURE_OPENAI_TOKEN"); v != "" {
+		AzureOpenAIToken = v
 	}
 
 	log.Printf("loading azure api endpoint: %s", AzureOpenAIEndpoint)
@@ -68,7 +73,15 @@ func NewOpenAIReverseProxy() *httputil.ReverseProxy {
 		deployment := GetDeploymentByModel(model)
 
 		// Replace the Bearer field in the Authorization header with api-key
-		token := strings.ReplaceAll(req.Header.Get("Authorization"), "Bearer ", "")
+		token := ""
+
+		// use the token from the environment variable if it is set
+		if AzureOpenAIToken != "" {
+			token = AzureOpenAIToken
+		} else {
+			token = strings.ReplaceAll(req.Header.Get("Authorization"), "Bearer ", "")
+		}
+
 		req.Header.Set("api-key", token)
 		req.Header.Del("Authorization")
 
