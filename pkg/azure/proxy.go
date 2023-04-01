@@ -46,6 +46,7 @@ func init() {
 	}
 	if v := os.Getenv("AZURE_OPENAI_TOKEN"); v != "" {
 		AzureOpenAIToken = v
+		log.Printf("loading azure api token from env")
 	}
 
 	log.Printf("loading azure api endpoint: %s", AzureOpenAIEndpoint)

@@ -5,6 +5,7 @@ import (
 	"github.com/diemus/azure-openai-proxy/pkg/openai"
 	"github.com/gin-gonic/gin"
 	"log"
+	"net/http"
 	"os"
 )
 
@@ -29,6 +30,15 @@ func main() {
 	r := gin.Default()
 	r.Any("*path", func(c *gin.Context) {
 		if ProxyMode == "azure" {
+			// BUGFIX: fix options request, see https://github.com/diemus/azure-openai-proxy/issues/1
+			if c.Request.Method == http.MethodOptions {
+				c.Header("Access-Control-Allow-Origin", "*")
+				c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+				c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+				c.Status(200)
+				return
+			}
+
 			server := azure.NewOpenAIReverseProxy()
 			server.ServeHTTP(c.Writer, c.Request)
 			//BUGFIX: try to fix the difference between azure and openai
