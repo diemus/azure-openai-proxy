@@ -20,6 +20,20 @@ Highlights:
 - 🧠 Supports proxying all Azure OpenAI models and custom fine-tuned models
 - 🗺️ Supports custom mapping between Azure deployment names and OpenAI models
 - 🔄 Supports both reverse proxy and forward proxy usage
+- 👍 Support mocking of OpenAI APIs that are not supported by Azure.
+
+
+## Supported APIs
+
+The latest version of the Azure OpenAI service currently supports the following 3 APIs:
+
+| Path                  | Status |
+| --------------------- | ------ |
+| /v1/chat/completions  |  ✅   |
+| /v1/completions       | ✅    |
+| /v1/embeddings        | ✅    |
+
+> Other APIs not supported by Azure will be returned in a mock format (such as OPTIONS requests initiated by browsers). If you find your project need additional OpenAI-supported APIs, feel free to submit a PR.
 
 ## Usage
 

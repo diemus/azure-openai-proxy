@@ -21,6 +21,19 @@ OpenAI 请求，方便作为各类开源 ChatGPT 的后端使用。同时也支�
 - 🧠 支持代理所有 Azure OpenAI 模型以及自定义微调模型
 - 🗺️ 支持自定义 Azure 部署名与 OpenAI 模型的映射关系
 - 🔄 支持反向代理和正向代理两种方式使用
+- 👍 支持对Azure不支持的OpenAI接口进行Mock
+
+## 支持的接口
+
+目前最新版本的Azure OpenAI服务支持以下3个接口：
+
+| Path                  | Status |
+| --------------------- |------|
+| /v1/chat/completions  |  ✅   |
+| /v1/completions       | ✅    |
+| /v1/embeddings        | ✅    |
+
+> 其他Azure不支持的接口会通过mock的形式返回（比如浏览器发起的OPTIONS类型的请求）。如果你发现需要某些额外的OpenAI支持的接口，欢迎提交PR
 
 ## 使用方式
 
