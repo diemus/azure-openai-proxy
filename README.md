@@ -35,6 +35,11 @@ The latest version of the Azure OpenAI service currently supports the following 
 
 > Other APIs not supported by Azure will be returned in a mock format (such as OPTIONS requests initiated by browsers). If you find your project need additional OpenAI-supported APIs, feel free to submit a PR.
 
+## Recently Updated
+
++ 2023-04-06 supported `/v1/models` interface, fixed the issue of some web projects depending on `models` interface error.
++ 2023-04-04 supported `options` interface, fixed the cross-domain check error issue of some web projects.
+
 ## Usage
 
 ### 1. Used as reverse proxy (i.e. an OpenAI API gateway)
