@@ -81,6 +81,10 @@ func NewOpenAIReverseProxy() *httputil.ReverseProxy {
 			token = AzureOpenAIToken
 		} else {
 			token = strings.ReplaceAll(req.Header.Get("Authorization"), "Bearer ", "")
+			// if start with 'sk-' then remove it
+			if strings.HasPrefix(token, "sk-") {
+				token = strings.Replace(token, "sk-", "", 1)
+			}
 		}
 
 		req.Header.Set("api-key", token)
