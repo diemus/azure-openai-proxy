@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"github.com/diemus/azure-openai-proxy/pkg/azure"
 	"github.com/diemus/azure-openai-proxy/pkg/openai"
 	"github.com/gin-gonic/gin"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -12,6 +14,7 @@ import (
 var (
 	Address   = "0.0.0.0:8080"
 	ProxyMode = "azure"
+	LogPath   = "log/proxy.log"
 )
 
 func init() {
@@ -22,6 +25,17 @@ func init() {
 	if v := os.Getenv("AZURE_OPENAI_PROXY_MODE"); v != "" {
 		ProxyMode = v
 	}
+	if v := os.Getenv("AZURE_OPENAI_PROXY_LOG_PATH"); v != "" {
+		LogPath = v
+	}
+	logFile, err := os.OpenFile(LogPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		fmt.Println("open log file failed, err:", err)
+		return
+	}
+	multi := io.MultiWriter(logFile, os.Stdout)
+	log.SetOutput(multi)
+	log.SetFlags(log.Llongfile | log.Ldate | log.Ltime)
 	log.Printf("loading azure openai proxy address: %s", Address)
 	log.Printf("loading azure openai proxy mode: %s", ProxyMode)
 }
@@ -39,7 +53,7 @@ func main() {
 		router.Any("*path", handleOpenAIProxy)
 	}
 
-	router.Run(Address)
+	_ = router.Run(Address)
 
 }
 
