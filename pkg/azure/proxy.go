@@ -76,11 +76,12 @@ func NewOpenAIReverseProxy() *httputil.ReverseProxy {
 		// Replace the Bearer field in the Authorization header with api-key
 		token := ""
 
+		tokenFromReq := strings.ReplaceAll(req.Header.Get("Authorization"), "Bearer ", "")
 		// use the token from the environment variable if it is set
 		if AzureOpenAIToken != "" {
 			token = AzureOpenAIToken
 		} else {
-			token = strings.ReplaceAll(req.Header.Get("Authorization"), "Bearer ", "")
+			token = tokenFromReq
 		}
 
 		req.Header.Set("api-key", token)
@@ -99,7 +100,8 @@ func NewOpenAIReverseProxy() *httputil.ReverseProxy {
 		query.Add("api-version", AzureOpenAIAPIVersion)
 		req.URL.RawQuery = query.Encode()
 
-		log.Printf("proxying request [%s] %s -> %s", model, originURL, req.URL.String())
+		log.Printf("user identity: [%s], proxying request [%s] %s -> %s",
+			tokenFromReq, model, originURL, req.URL.String())
 	}
 	return &httputil.ReverseProxy{Director: director}
 }
